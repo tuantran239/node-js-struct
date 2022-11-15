@@ -1,0 +1,24 @@
+{
+  "env": {
+    "browser": true,
+    "commonjs": true,
+    "es2021": true
+  },
+  "extends": "standard",
+  "overrides": [],
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
+  "rules": {
+    "space-before-function-paren": "off",
+    "no-unused-vars": "off",
+    "indent": "off",
+    "no-undef": "off",
+    "no-useless-catch": "off",
+    "no-multiple-empty-lines": "off",
+    "quotes": "off",
+    "eqeqeq": "off",
+    "camelcase": "off",
+    "dot-notation": "off"
+  }
+}
