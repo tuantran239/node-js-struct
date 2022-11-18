@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose'
 import { Status } from '../constants'
 import { hash, genSalt, compare } from 'bcrypt'
+import { generateAvatarUrl } from '../utils'
 
 const UserSchema = new Schema(
   {
@@ -16,6 +17,10 @@ const UserSchema = new Schema(
     password: {
       type: String,
       required: true
+    },
+    avatar: {
+      type: String,
+      default: generateAvatarUrl('user')
     },
     status: {
       type: String,
@@ -33,6 +38,11 @@ const UserSchema = new Schema(
     }
   }
 )
+
+UserSchema.methods.hashPassword = async function (password) {
+  const salt = await genSalt(10)
+  return await hash(password, salt)
+}
 
 UserSchema.methods.comparePassword = async function (password) {
   return await compare(password, this.password)

@@ -19,3 +19,6 @@ export const mapObjectToArray = (obj) => {
   }
   return []
 }
+
+export const generateAvatarUrl = (name) =>
+  `https://avatars.dicebear.com/api/jdenticon/${name}.svg`

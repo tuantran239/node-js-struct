@@ -1,8 +1,10 @@
 import {
   authUser,
+  checkUser,
   createAccessToken,
   createRefreshToken,
   createUser,
+  resetPassword,
   updateUser
 } from '../services/user.service'
 import {
@@ -11,11 +13,14 @@ import {
   deleteOtp,
   sendOtp
 } from '../services/otp.service'
-import { generateOtp } from '../utils/common'
+import { generateAvatarUrl, generateOtp } from '../utils/common'
 import { Cookie, Status } from '../constants'
 
 export const signupHandler = async (req, res, next) => {
-  const { error, data: user } = await createUser(req.body)
+  const { error, data: user } = await createUser({
+    ...req.body,
+    avatar: generateAvatarUrl(req.body.username)
+  })
   if (error) {
     req.error = error
     return next()
@@ -41,6 +46,19 @@ export const resendMailHandler = async (req, res, next) => {
   })
 }
 
+export const verifyOTPHandler = async (req, res, next) => {
+  const { error } = await checkOtp(req.body)
+  if (error) {
+    req.error = error
+    return next()
+  }
+  await deleteOtp(req.body.email)
+
+  return res.status(200).send({
+    success: true
+  })
+}
+
 export const activeAccountHandler = async (req, res, next) => {
   const { email } = req.body
 
@@ -59,6 +77,33 @@ export const activeAccountHandler = async (req, res, next) => {
   await deleteOtp(email)
 
   return res.status(201).send({
+    success: true
+  })
+}
+
+export const forgotPasswordHandler = async (req, res, next) => {
+  const { data: user, error } = await checkUser({ email: req.body.email })
+  if (error) {
+    req.error = error
+    return next()
+  }
+
+  const otp = generateOtp(6)
+  Promise.all([createOtp(user.email, otp), sendOtp({ email: user.email, otp })])
+
+  return res.status(201).send({
+    success: true,
+    email: user.email
+  })
+}
+
+export const resetPasswordHandler = async (req, res, next) => {
+  const { error } = await resetPassword(req.body)
+  if (error) {
+    req.error = error
+    return next()
+  }
+  return res.status(200).send({
     success: true
   })
 }

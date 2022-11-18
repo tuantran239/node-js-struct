@@ -3,6 +3,40 @@ import { handleError, throwValidationError } from '../errors/mongodb-error'
 import User from '../models/User'
 import { signJwt } from '../utils'
 
+export const checkUser = async (
+  filter = undefined,
+  projection = undefined,
+  options = undefined
+) => {
+  try {
+    const user = await User.findOne(filter, projection, options)
+    if (!user) {
+      throwValidationError('user', 'User not found', true)
+    }
+    return { data: user, error: null }
+  } catch (error) {
+    const errRes = handleError(error)
+    return { data: null, error: errRes }
+  }
+}
+
+export const resetPassword = async (body) => {
+  try {
+    const password = body.password
+    delete body.password
+    const user = await User.findOne(body, 'password')
+    if (!user) {
+      throwValidationError('user', 'User not found', true)
+    }
+    user.password = password
+    await user.save()
+    return { data: true, error: null }
+  } catch (error) {
+    const errRes = handleError(error)
+    return { data: null, error: errRes }
+  }
+}
+
 export const createUser = async (body) => {
   try {
     const user = await User.create(body)

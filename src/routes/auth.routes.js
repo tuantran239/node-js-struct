@@ -2,10 +2,13 @@ import { Router } from 'express'
 import {
   activeAccountHandler,
   authHandler,
+  forgotPasswordHandler,
   loginHandler,
   logoutHandler,
   resendMailHandler,
-  signupHandler
+  resetPasswordHandler,
+  signupHandler,
+  verifyOTPHandler
 } from '../controllers/auth.controllers'
 import { validate } from '../middlewares'
 import authenticate from '../middlewares/authenticate'
@@ -33,5 +36,11 @@ AuthRouter.post(
 AuthRouter.post('/api/auth/resend', resendMailHandler)
 
 AuthRouter.post('/api/auth/login', LoginSchema, validate, loginHandler)
+
+AuthRouter.post('/api/auth/forgot-password', forgotPasswordHandler)
+
+AuthRouter.post('/api/auth/check-otp', verifyOTPHandler)
+
+AuthRouter.post('/api/auth/reset-password', resetPasswordHandler)
 
 export default AuthRouter
